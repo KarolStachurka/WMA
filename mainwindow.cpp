@@ -19,7 +19,6 @@ void MainWindow::on_loadVideo_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "/home", tr("Video Files (*.mp4 *.avi)"));
     ui->communicateBox->clear();
-    ui->pathLine->setText(fileName);
     int roadPosition = 0;
     if(ui->horizontalRadioButton->isChecked())
         roadPosition = 1;

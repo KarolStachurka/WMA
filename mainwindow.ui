@@ -24,16 +24,6 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="2">
-      <widget class="QPushButton" name="loadVideo">
-       <property name="text">
-        <string>Wczytaj plik</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QLineEdit" name="pathLine"/>
-     </item>
      <item row="2" column="0" colspan="3">
       <widget class="QPlainTextEdit" name="communicateBox">
        <property name="readOnly">
@@ -62,6 +52,13 @@
       <widget class="QLabel" name="text1">
        <property name="text">
         <string>Ulica:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="3">
+      <widget class="QPushButton" name="loadVideo">
+       <property name="text">
+        <string>Wczytaj plik</string>
        </property>
       </widget>
      </item>
