@@ -7,17 +7,6 @@ CarDetection::CarDetection(string filepath, int roadType)
     VideoCapture videoSample(filepath);
     this->videoSample = videoSample;
     VideoCapture trainset(filepath);
-    stringstream path;
-    path << filepath;
-    std::string segment;
-    std::vector<std::string> seglist;
-
-    while(std::getline(path, segment, '/'))
-    {
-       seglist.push_back(segment);
-    }
-    //endPath = ""
-    //endPath += seglist.at(seglist.size() - 1);
     substractor = cv::createBackgroundSubtractorKNN();
     trainSubtractor(trainset, substractor, 500);
 }
@@ -60,9 +49,13 @@ Mat CarDetection::detectCarHorizontally(Mat original, int distance)
     frame = original.clone();
     resize(frame, frame, Size(700, 400));
     substractor->apply(frame, frameBackground);
+
+    //Morphological operations
     threshold(frameBackground, frameBackground, 244, 255, THRESH_BINARY);
     erode(frameBackground, frameBackground, kernel, Point(-1,-1), 1);
     dilate(frameBackground, frameBackground, kernel, Point(-1,-1), 3);
+
+    //Finding objects
     findContours(frameBackground, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
     for(unsigned int i = 0; i< contours.size(); i++ )
         {
@@ -76,7 +69,9 @@ Mat CarDetection::detectCarHorizontally(Mat original, int distance)
     vector<Rect> boundRect( contours.size() );
     vector<Point2f>center( contours.size() );
     vector<float>radius( contours.size() );
+
     line(original, Point(original.size().width*0.15, original.size().height*0.75), Point(original.size().width * 0.85, original.size().height * 0.75), Scalar( 0, 0, 255 ),5,8,0);
+    //Detecting cars
     for( unsigned int i = 0; i< contours.size(); i++ )
     {
         if(contourArea(contours[i]) > frame.rows/20* frame.cols/20)
@@ -100,6 +95,8 @@ Mat CarDetection::detectCarHorizontally(Mat original, int distance)
                 cars.push_back(temp);
         }
     }
+    //Counting cars
+
     for(auto &j : cars)
     {
         j.updated = false;
@@ -129,15 +126,20 @@ Mat CarDetection::detectCarVertically(Mat original, int distance)
 {
     Mat frame, frameBackground;
     Mat kernel = getStructuringElement( MORPH_ELLIPSE, Size( 2, 2 ), Point( 1, 1 ) );
-    Mat kernel2 = getStructuringElement( MORPH_ELLIPSE, Size( 4, 3 ), Point( 1, 1 ) );
     vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
     frame = original.clone();
     resize(frame, frame, Size(700, 400));
+
+    //Background subtraction
     substractor->apply(frame, frameBackground);
+
+    //Morphologica operations
     threshold(frameBackground, frameBackground, 244, 255, THRESH_BINARY);
     erode(frameBackground, frameBackground, kernel, Point(-1,-1), 1);
     dilate(frameBackground, frameBackground, kernel, Point(-1,-1), 3);
+
+    //Finding objects
     findContours(frameBackground, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
     for( unsigned int i = 0; i< contours.size(); i++ )
         {
@@ -151,7 +153,10 @@ Mat CarDetection::detectCarVertically(Mat original, int distance)
     vector<Rect> boundRect( contours.size() );
     vector<Point2f>center( contours.size() );
     vector<float>radius( contours.size() );
+
     line(original, Point(original.size().width*0.3, original.size().height*0.1), Point(original.size().width * 0.3, original.size().height * 0.9), Scalar( 0, 0, 255 ),5,8,0);
+
+    //Detecting cars
     for( unsigned int i = 0; i< contours.size(); i++ )
     {
         if(contourArea(contours[i]) > frame.rows/20* frame.cols/20)
@@ -177,13 +182,13 @@ Mat CarDetection::detectCarVertically(Mat original, int distance)
             }
             if(!found && allowed && (temp.centerX < frame.size().width*0.3 + 20 && temp.centerX > frame.size().width*0.3 - 20))
                 cars.push_back(temp);
-            //rectangle(original, boundRect[i], Scalar( 0, 0, 255 ), 2);
 
         }
     }
+
+    //Counting cars
     for(auto &j : cars)
     {
-        //circle( original, Point(j.centerX, j.centerY), 6, Scalar( 255, 0, 0), 2, 8, 0 );
         j.updated = false;
         if((j.centerX < frame.size().width*0.3 + 10 && j.centerX > frame.size().width*0.3 - 10 ) && !j.spotted)
         {
