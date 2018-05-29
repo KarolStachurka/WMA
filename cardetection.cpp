@@ -217,7 +217,7 @@ void CarDetection::detectCars()
     Mat original;
     int frames_per_second = 30;
     videoSample >> original;
-    VideoWriter oVideoWriter("outputVids/output.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), frames_per_second, original.size(), true);
+    VideoWriter oVideoWriter("output.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), frames_per_second, original.size(), true);
     do
     {
         if(roadType == 1)
